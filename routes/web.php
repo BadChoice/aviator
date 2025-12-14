@@ -8,11 +8,6 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::get('search', function () {
-    $json = (new App\Services\AppStore\AppStoreSearch)->search(request('term'));
-    return view('search', ['json' => $json]);
-})->name('search');
-
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -20,6 +15,8 @@ Route::view('dashboard', 'dashboard')
 
 Route::get('/applications', \App\Livewire\Applications\Index::class)->name('applications.index');
 Route::get('/applications/{application}', \App\Livewire\Applications\Show::class)->name('applications.show');
+
+Route::get('/search', \App\Livewire\Appstore\Search::class)->name('appstore.search');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
