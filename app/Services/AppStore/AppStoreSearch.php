@@ -6,35 +6,54 @@ use Illuminate\Support\Facades\Http;
 
 class AppStoreSearch
 {
-
-    static string $url = 'https://itunes.apple.com/search';
+    public static string $url = 'https://itunes.apple.com/search';
 
     /**
-     * @param string $keyword
-     * @param string $country
-     * @param $limit
-     * @return array
      * @throws \Illuminate\Http\Client\ConnectionException
      */
-    public function search(string $keyword, string $country = 'US', int $limit = 200) : array {
+    public function search(string $keyword, string $country = 'US', int $limit = 200): array
+    {
 
         $result = Http::get(url: self::$url, query: [
-            "term" => $keyword,
-            "country" => $country,
-            "entity" => "software",
-            "limit" => $limit,
+            'term' => $keyword,
+            'country' => $country,
+            'entity' => 'software',
+            'limit' => $limit,
         ]);
 
         return $result->json();
     }
 
-    public function rankingPositionFor(string $application_id, string $keyword, string $country = 'US', int $limit = 250) : ?int
+    public function rankingPositionFor(string $application_id, string $keyword, string $country = 'US', int $limit = 250): ?int
     {
         $results = $this->search(keyword: $keyword, country: $country, limit: $limit);
 
-        return collect($results['results'])->search(function($result) use ($application_id){
+        return collect($results['results'])->search(function ($result) use ($application_id) {
             return $result['trackId'] == $application_id;
         });
     }
-}
 
+    /**
+     * Returns detailed info for a given app within a keyword search, including position and ratings.
+     *
+     * @return array{position:int|null, average_rating:float|null, rating_count:int|null}
+     */
+    public function trackInfoFor(string $application_id, string $keyword, string $country = 'US', int $limit = 250): array
+    {
+        $results = $this->search(keyword: $keyword, country: $country, limit: $limit);
+
+        $collection = collect($results['results']);
+
+        $position = $collection->search(function ($result) use ($application_id) {
+            return $result['trackId'] == $application_id;
+        });
+
+        $item = $position !== false ? $collection->get($position) : null;
+
+        return [
+            'position' => $position !== false ? (int) $position : null,
+            'average_rating' => $item['averageUserRating'] ?? null,
+            'rating_count' => $item['userRatingCount'] ?? null,
+        ];
+    }
+}

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->foreignIdFor(\App\Models\Application::class)->constrained()->cascadeOnDelete();
+            $table->integer('last_ranking_position')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

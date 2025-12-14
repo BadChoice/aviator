@@ -18,6 +18,8 @@ Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+Route::get('/applications', \App\Livewire\Applications\Index::class)->name('applications.index');
+Route::get('/applications/{application}', \App\Livewire\Applications\Show::class)->name('applications.show');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');

@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Competitor extends Model
+class Keyword extends Model
 {
     protected $guarded = [];
 
@@ -15,8 +15,8 @@ class Competitor extends Model
         return $this->belongsTo(Application::class);
     }
 
-    public function rankings(): MorphMany
+    public function rankings(): HasMany
     {
-        return $this->morphMany(Ranking::class, 'subject');
+        return $this->hasMany(Ranking::class);
     }
 }
