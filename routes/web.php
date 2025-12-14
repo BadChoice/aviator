@@ -8,9 +8,16 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+Route::get('search', function () {
+    $json = (new App\Services\AppStore\AppStoreSearch)->search(request('term'));
+    return view('search', ['json' => $json]);
+})->name('search');
+
+
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
