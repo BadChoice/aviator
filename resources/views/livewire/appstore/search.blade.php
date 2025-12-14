@@ -13,9 +13,9 @@
 {{--                        {{ $result['trackId']}}--}}
                         <div>
                             <div>
-                                <div>
-                                    {{ $result['trackName']}} -
-                                    {{ $result['primaryGenreName']}}
+                                <div class="flex gap-3 items-center">
+                                    <div>{{ $result['trackName']}}</div>
+
                                 </div>
                                 <div class="flex gap-4 text-sm">
                                     <div>{{ $result['formattedPrice'] ?? "FREE"}}</div>
@@ -23,9 +23,14 @@
                                         {{ number_format($result['averageUserRating'], 2)}}
                                         ({{ $result['userRatingCount']}})
                                     </div>
+
                                 </div>
                             </div>
-                            <div class="text-gray-500 text-sm">{{ $result['artistName']}}</div>
+                            <div class="flex gap-2 text-gray-500 text-sm">
+                                <div>{{ $result['artistName']}}</div>
+                                <div>|</div>
+                                <div>{{ $result['primaryGenreName']}}</div>
+                            </div>
 
                         </div>
                     </div>

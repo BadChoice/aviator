@@ -14,7 +14,9 @@
                 @if($group['used'])
                     !
                 @endif
+                @if($group['latest_position'])
                 <div class="font-bold text-sm">#{{ $group['latest_position'] ?? '--' }}</div>
+                @endif
 
                 <div class="grow max-w-[240px]">
                     <canvas
