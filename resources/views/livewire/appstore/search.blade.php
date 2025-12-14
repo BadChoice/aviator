@@ -4,12 +4,19 @@
         <main class="flex max-w-[335px] w-full flex-col-reverse lg:max-w-4xl lg:flex-row">
             <div class="flex flex-col gap-3">
                 @foreach($json['results'] as $result)
-                    <div class="flex gap-4">
+                    <a href="{{$result['trackViewUrl']}}" target="_blank">
+                    <div class="flex gap-4 items-center">
+                        <div>
+                            {{ $loop->index + 1 }}
+                        </div>
                         <img src="{{$result['artworkUrl512']}}" class="w-16 h-16 rounded-xl" alt="icon"/>
 {{--                        {{ $result['trackId']}}--}}
                         <div>
                             <div>
-                                <div>{{ $result['trackName']}}</div>
+                                <div>
+                                    {{ $result['trackName']}} -
+                                    {{ $result['primaryGenreName']}}
+                                </div>
                                 <div class="flex gap-4 text-sm">
                                     <div>{{ $result['formattedPrice'] ?? "FREE"}}</div>
                                     <div>
@@ -22,6 +29,7 @@
 
                         </div>
                     </div>
+                    </a>
                 @endforeach
             </div>
         </main>
