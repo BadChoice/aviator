@@ -12,8 +12,12 @@
                 <div class="bg-neutral-200 rounded-lg px-2 py-1 text-xs text-center">
                     {{ $group['keyword_name'] }} ({{ $group['country'] }})
                 </div>
-                <div class="text-sm">Latest:</div>
+                @if($group['used'])
+                    !
+                @endif
+                @if($group['latest_position'])
                 <div class="font-bold text-sm">#{{ $group['latest_position'] ?? '--' }}</div>
+                @endif
 
                 <div class="grow max-w-[240px]">
                     <canvas

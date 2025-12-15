@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('keywords', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->boolean('used')->default(false);
             $table->foreignIdFor(\App\Models\Application::class)->constrained()->cascadeOnDelete();
             $table->integer('last_ranking_position')->nullable();
             $table->timestamps();

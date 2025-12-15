@@ -41,6 +41,7 @@ class Show extends Component
                     'keyword_id' => (int) $first->keyword_id,
                     'country' => (string) $first->country,
                     'keyword_name' => (string) $first->keyword->name,
+                    'used' => $first->keyword->used,
                     'labels' => $labels,
                     'data' => $data,
                     'latest_position' => $latestPosition !== null ? (int) $latestPosition : null,

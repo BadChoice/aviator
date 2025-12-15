@@ -13,6 +13,7 @@
                         </div>
                     @endforeach
                     </div>
+                    <p class="text-neutral-500">{{ $application->appstore_id }}</p>
                 </div>
             </a>
         @endforeach
