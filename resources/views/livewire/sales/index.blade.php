@@ -1,6 +1,6 @@
 <div>
 
-{{--    @dd($sales)--}}
+    @dd($sales)
 
     <table class="w-full">
         <tr>
@@ -35,14 +35,20 @@
                 </td>
                 <td>
                     {{ $sale['Customer Price'] }}
-                    {{ $sale['Currency of Proceeds'] }}
+                    {{ $sale['Customer Currency'] }}
                 </td>
             </tr>
         @endforeach
         </tbody>
     </table>
 
-    <div class="font-bold mt-12">
-    {{ collect($sales)->sum('Developer Proceeds') }}
+    <div class="mt-8">
+        <table>
+            @foreach($summary as $key => $value)
+                <tr>
+                    <td>{{ $key }} </td><td class="px-4"> {{ $value }} USD </td>
+                </tr>
+            @endforeach
+        </table>
     </div>
 </div>

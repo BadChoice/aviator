@@ -15,12 +15,18 @@ class Index extends Component
             privateKey: file_get_contents(config('services.app_store_connect.private_key')),
         );
 
+        $sales = $connect->salesReports(
+            vendorId: config('services.app_store_connect.vendor_id'),
+//            date: now()->subDays(2)
+        );
+
+        $summary = collect($sales)->groupBy('SKU')->map(function($sales){
+            return $sales->sum('Developer Proceeds');
+        });
 
         return view('livewire.sales.index', [
-            'sales' => $connect->salesReports(
-                vendorId: config('services.app_store_connect.vendor_id'),
-                date: now()->subDays(2)
-            )
+            'sales' => $sales,
+            'summary' => $summary
         ]);
     }
 }
