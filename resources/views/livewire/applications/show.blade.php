@@ -6,22 +6,24 @@
         <p class="text-neutral-500">{{ $application->appstore_id }}</p>
     </div>
 
-    <div class="flex flex-col gap-4 mt-8">
+    <div class="flex flex-col gap-1 mt-8">
         @forelse($groups as $group)
             <div class="flex items-center gap-4">
-                <div class="bg-neutral-200 rounded-lg px-2 py-1 text-xs text-center">
-                    {{ $group['keyword_name'] }} ({{ $group['country'] }})
+                <div class="flex text-sm w-52 items-center">
+                    <div>{{ $group['keyword_name'] }}</div>
+                    <div class="text-xs ml-2 rounded bg-neutral-200 px-2 py-1"> {{ $group['country'] }} </div>
+                    @if($group['used'])
+                        <flux:icon name="check" class="text-green-500 ml-2" variant="mini"  />
+                    @endif
                 </div>
-                @if($group['used'])
-                    !
-                @endif
+
                 @if($group['latest_position'])
                 <div class="font-bold text-sm">#{{ $group['latest_position'] ?? '--' }}</div>
                 @endif
 
                 <div class="grow max-w-[240px]">
                     <canvas
-                        class="mini-chart h-12"
+                        class="mini-chart h-10"
                         data-labels='@json($group['labels'])'
                         data-points='@json($group['data'])'
                     ></canvas>
