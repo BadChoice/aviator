@@ -2,31 +2,38 @@
 
 namespace App\Livewire\Sales;
 
-use App\Services\AppStore\AppStoreConnect;
+use App\Models\Sale;
 use Livewire\Component;
 
 class Index extends Component
 {
     public function render()
     {
-        $connect = new AppStoreConnect(
-            issuerId: config('services.app_store_connect.issuer_id'),
-            keyId: config('services.app_store_connect.key_id'),
-            privateKey: file_get_contents(config('services.app_store_connect.private_key')),
-        );
+        $salesModels = Sale::query()->latest('begin_date')->limit(500)->get();
 
-        $sales = $connect->salesReports(
-            vendorId: config('services.app_store_connect.vendor_id'),
-//            date: now()->subDays(2)
-        );
+        // Map to the same array shape used in the Blade for minimal UI change
+        $sales = $salesModels->map(function (Sale $s) {
+            return [
+                'Begin Date' => optional($s->begin_date)->format('m/d/Y'),
+                'End Date' => optional($s->end_date)->format('m/d/Y'),
+                'Title' => $s->title,
+                'SKU' => $s->sku,
+                'Version' => $s->version,
+                'Device' => $s->device,
+                'Product Type Identifier' => $s->product_type_identifier,
+                'Units' => $s->units,
+                'Developer Proceeds' => (string) $s->developer_proceeds,
+                'Currency of Proceeds' => $s->currency_of_proceeds,
+                'Customer Price' => (string) $s->customer_price,
+                'Customer Currency' => $s->customer_currency,
+            ];
+        })->all();
 
-        $summary = collect($sales)->groupBy('SKU')->map(function($sales){
-            return $sales->sum('Developer Proceeds');
-        });
+        $summary = collect($sales)->groupBy('SKU')->map(fn ($rows) => collect($rows)->sum('Developer Proceeds'));
 
         return view('livewire.sales.index', [
             'sales' => $sales,
-            'summary' => $summary
+            'summary' => $summary,
         ]);
     }
 }

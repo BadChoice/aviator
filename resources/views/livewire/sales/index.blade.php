@@ -1,7 +1,4 @@
 <div>
-
-    @dd($sales)
-
     <table class="w-full">
         <tr>
             <thead>
