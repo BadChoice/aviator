@@ -1,5 +1,10 @@
 <div>
-    <a href="{{ route('applications.index') }}" wire:navigate>Back</a>
+    <a href="{{ route('applications.index') }}" wire:navigate>
+        <div class="flex items-center">
+        <flux:icon name="chevron-left" variant="mini" class="text-neutral-500" />
+        <div>Back</div>
+        </div>
+    </a>
     <div class="flex flex-col space-x-8 mt-4">
         <img src="{{ $application->icon }}" class="h-20 w-20 rounded-lg"/>
         <p class="text-neutral-500">{{ $application->name }}</p>
