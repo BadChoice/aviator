@@ -17,7 +17,10 @@ class Index extends Component
 
 
         return view('livewire.sales.index', [
-            'sales' => $connect->salesReports(vendorId: config('services.app_store_connect.vendor_id'))
+            'sales' => $connect->salesReports(
+                vendorId: config('services.app_store_connect.vendor_id'),
+                date: now()->subDays(2)
+            )
         ]);
     }
 }

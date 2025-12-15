@@ -3,6 +3,7 @@
 namespace App\Services\AppStore;
 
 use App\Services\AppStore\Helpers\SalesResponse;
+use Carbon\CarbonInterface;
 use Closure;
 use DateTimeInterface;
 use Firebase\JWT\JWT;
@@ -39,13 +40,11 @@ class AppStoreConnect
         return $this->call("{$this->baseUrl}/apps/{$appId}");
     }
 
-    public function salesReports(string $vendorId){
-        $now = date('Y-m-d');
-        $lastMonth = date('Y-m-d', strtotime('-30 days'));
+    public function salesReports(string $vendorId, ?CarbonInterface $date = null){
 
         $tsv = $this->call("{$this->baseUrl}/v1/salesReports", [
             'filter[frequency]' => 'DAILY',
-//            'filter[reportDate]' => "{$lastMonth},{$now}",
+            'filter[reportDate]' => $date?->format('Y-m-d'),
             'filter[reportType]' => 'SALES',
             'filter[reportSubType]' => 'SUMMARY',
             'filter[vendorNumber]' => $vendorId,
