@@ -1,7 +1,8 @@
 <div>
     <a href="{{ route('applications.index') }}" wire:navigate>Back</a>
-    <div class="flex flex-col space-x-8">
+    <div class="flex flex-col space-x-8 mt-4">
         <img src="{{ $application->icon }}" class="h-20 w-20 rounded-lg"/>
+        <p class="text-neutral-500">{{ $application->name }}</p>
         <p class="text-neutral-500">{{ $application->appstore_id }}</p>
     </div>
 
