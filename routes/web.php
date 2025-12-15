@@ -15,6 +15,7 @@ Route::view('dashboard', 'dashboard')
 
 Route::get('/applications', \App\Livewire\Applications\Index::class)->name('applications.index');
 Route::get('/applications/{application}', \App\Livewire\Applications\Show::class)->name('applications.show');
+Route::get('/sales', \App\Livewire\Sales\Index::class)->name('sales.index');
 
 Route::get('/search', \App\Livewire\Appstore\Search::class)->name('appstore.search');
 

@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'app_store_connect' => [
+        'issuer_id' => env('ASC_ISSUER_ID'),
+        'key_id' => env('ASC_KEY_ID'),
+        'private_key' => resource_path('appstore/' . env('ASC_PRIVATE_KEY')), // PEM contents or path managed by secrets
+        'vendor_id' => env('ASC_VENDOR_ID'),
+        'base_url' => env('ASC_BASE_URL', 'https://api.appstoreconnect.apple.com'),
+    ],
+
 ];

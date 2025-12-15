@@ -3,6 +3,7 @@
 namespace App\Livewire\Applications;
 
 use App\Models\Application;
+use App\Services\AppStore\AppStoreConnect;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
@@ -17,6 +18,7 @@ class Show extends Component
 
     public function render()
     {
+
         // Eager load rankings with keywords ordered by date
         $this->application->load([
             'rankings' => fn ($q) => $q->with('keyword')->orderBy('date'),
