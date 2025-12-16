@@ -3,7 +3,9 @@
         @if($application->icon)
             <img src="{{ $application->icon }}" alt="{{ $application->name }}" class="rounded-xl h-12 w-12">
         @endif
+        <a href="{{route('applications.show', $application)}}">
         <div class="text-lg font-semibold">{{ $application->name }}</div>
+        </a>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
