@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\SyncAppStoreSales;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class SalesSync extends Command
@@ -27,7 +28,7 @@ class SalesSync extends Command
     public function handle(): int
     {
         $dateOption = $this->option('date');
-        $date = $dateOption ? Carbon\CarbonImmutable::parse((string) $dateOption) : null;
+        $date = $dateOption ? Carbon::parse($dateOption) : null;
 
         dispatch(new SyncAppStoreSales($date));
 

@@ -29,7 +29,9 @@ class Index extends Component
             ];
         })->all();
 
-        $summary = collect($sales)->groupBy('SKU')->map(fn ($rows) => collect($rows)->sum('Developer Proceeds'));
+        $summary = collect($sales)->groupBy('SKU')->map(fn ($rows) => collect($rows)->sum(function($sale){
+            return $sale['Units'] * $sale['Developer Proceeds'];
+        }));
 
         return view('livewire.sales.index', [
             'sales' => $sales,
