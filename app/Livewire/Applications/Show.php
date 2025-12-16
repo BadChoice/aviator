@@ -3,17 +3,33 @@
 namespace App\Livewire\Applications;
 
 use App\Models\Application;
+use App\Models\Keyword;
 use App\Repositories\RankingRepository;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 class Show extends Component
 {
     public Application $application;
+    public string $newKeywords = '';
 
     public function mount(Application $application): void
     {
         $this->application = $application;
+    }
+
+    public function addKeywords(): void {
+        Str::of($this->newKeywords)->explode(",")->map(fn ($word) => trim($word))->filter()->each(function (string $word) {
+            $this->application->keywords()->firstOrCreate([
+                'name' => $word,
+            ]);
+        });
+        $this->newKeywords = '';
+    }
+
+    public function removeKeyword(int $keywordId): void {
+        Keyword::find($keywordId)->delete();
     }
 
     public function render(): \Illuminate\View\View

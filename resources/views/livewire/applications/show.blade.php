@@ -11,6 +11,20 @@
         <p class="text-neutral-500">{{ $application->appstore_id }}</p>
     </div>
 
+    <div class="flex">
+        <flux:input wire:model="newKeywords" type="text" placeholder="Add keywords to track (comma separated)" class="input input-bordered w-full mt-6" />
+        <flux:button wire:click="addKeywords" class="ml-4 mt-6" variant="primary">Add Keywords</flux:button>
+    </div>
+
+    <div class="flex items-center mt-4 p-4 gap-4 border rounded-lg">
+    @foreach($application->keywords as $keyword)
+            <div class="flex items-center gap-2">
+                <div class="">{{ $keyword->name }}</div>
+                <flux:button wire:click="removeKeyword({{ $keyword->id }})" icon="x-mark" size="xs"></flux:button>
+            </div>
+    @endforeach
+    </div>
+
     <div class="flex flex-col gap-1 mt-8">
         @forelse($groups as $group)
             <div class="flex items-center gap-4">
