@@ -14,6 +14,8 @@
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                    <flux:navlist.item icon="home" :href="route('applications.index')" :current="request()->routeIs('applications.index')" wire:navigate>{{ __('Applications') }}</flux:navlist.item>
+                    <flux:navlist.item icon="magnifying-glass" :href="route('appstore.search')" :current="request()->routeIs('appstore.search')" wire:navigate>{{ __('Search') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 
