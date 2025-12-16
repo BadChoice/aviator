@@ -16,12 +16,12 @@
         <flux:button wire:click="addKeywords" class="ml-4 mt-6" variant="primary">Add Keywords</flux:button>
     </div>
 
-    <div class="flex items-center mt-4 p-4 gap-4 border rounded-lg">
+    <div class="flex items-center mt-4 p-4 gap-4 overflow-x-scroll">
     @foreach($application->keywords as $keyword)
-            <div class="flex items-center gap-2">
-                <div class="">{{ $keyword->name }}</div>
-                <flux:button wire:click="removeKeyword({{ $keyword->id }})" icon="x-mark" size="xs"></flux:button>
-            </div>
+        <div class="flex items-center gap-2 border rounded-xl px-2 py-1 ">
+            <div class="text-xs">{{ $keyword->name }}</div>
+            <flux:button wire:click="removeKeyword({{ $keyword->id }})" icon="x-mark" size="xs"></flux:button>
+        </div>
     @endforeach
     </div>
 
