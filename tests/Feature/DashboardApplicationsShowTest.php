@@ -85,7 +85,9 @@ it('shows latest ranking per keyword and revenue graph on dashboard application 
         ->assertSee('US')
         ->assertSee('airport map')
         ->assertSee('#12')
-        ->assertSee('GB');
+        ->assertSee('GB')
+        // Ensure a USD amount is visible in the DOM for tooltip/mobile label
+        ->assertSee('$20.00');
 
     // Assert revenue graph shows from-first to last date labels somewhere in component
     $component->assertSee(Carbon::today()->toDateString());
