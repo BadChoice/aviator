@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Jobs\SyncAppStoreSales;
+use App\Jobs\UpdateSalesNormalizedProceeds;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Bus;
 
 class SalesSync extends Command
 {
@@ -30,7 +32,10 @@ class SalesSync extends Command
         $dateOption = $this->option('date');
         $date = $dateOption ? Carbon::parse($dateOption) : null;
 
-        dispatch(new SyncAppStoreSales($date));
+        Bus::chain([
+            new SyncAppStoreSales($date),
+            new UpdateSalesNormalizedProceeds($date, onlyMissing: false),
+        ])->dispatch();
 
         $this->components->info('Sales sync dispatched'.($date ? ' for '.$date->toDateString() : ''));
 

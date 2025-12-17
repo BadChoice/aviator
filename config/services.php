@@ -43,4 +43,10 @@ return [
         'base_url' => env('ASC_BASE_URL', 'https://api.appstoreconnect.apple.com'),
     ],
 
+    'fixer' => [
+        'key' => env('FIXER_API_KEY'),
+        'base_url' => env('FIXER_BASE_URL', 'https://api.apilayer.com/fixer'),
+        // Note: Free plans may use EUR as base. We'll compute cross rates accordingly.
+    ],
+
 ];

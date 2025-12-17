@@ -19,6 +19,7 @@ class Sale extends Model
         'product_type_identifier',
         'units',
         'developer_proceeds',
+        'normalized_proceeds',
         'begin_date',
         'end_date',
         'customer_currency',
@@ -49,6 +50,7 @@ class Sale extends Model
             'end_date' => 'date',
             'units' => 'integer',
             'developer_proceeds' => 'decimal:2',
+            'normalized_proceeds' => 'decimal:2',
             'customer_price' => 'decimal:2',
             'raw' => 'array',
         ];

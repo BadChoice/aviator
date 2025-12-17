@@ -35,7 +35,7 @@ class SyncAppStoreSales implements ShouldQueue
             );
 
             $vendorId = (string) config('services.app_store_connect.vendor_id');
-            $date = $this->date ? CarbonImmutable::parse($this->date) : now()->subDay()->startOfDay();
+            $date = $this->date ? CarbonImmutable::parse($this->date) : now()->subDay(2)->startOfDay();
 
             $rows = $connect->salesReports(vendorId: $vendorId, date: $date);
         }

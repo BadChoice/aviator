@@ -26,6 +26,7 @@ class SaleFactory extends Factory
             'product_type_identifier' => '1-B',
             'units' => 1,
             'developer_proceeds' => '4.20',
+            'normalized_proceeds' => null,
             'begin_date' => now()->toDateString(),
             'end_date' => now()->toDateString(),
             'customer_currency' => 'USD',
