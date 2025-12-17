@@ -40,6 +40,9 @@ class CurrencyExchange
      */
     public function convertToEur(float $amount, string $currency, CarbonInterface $date): float
     {
+        if ($amount == 0) {
+            return 0;
+        }
         $rate = $this->getRateToEur($currency, $date);
         return round($amount / $rate, 4);
     }
