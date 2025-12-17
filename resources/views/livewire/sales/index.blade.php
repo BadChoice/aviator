@@ -45,6 +45,22 @@
             </div>
         </div>
     @endisset
+
+    <div class="mt-8">
+        <table>
+            @foreach($summary as $key => $value)
+                <tr>
+                    <td>{{ $key }} </td><td class="px-4 text-right"> {{ $value }} EUR </td>
+                </tr>
+            @endforeach
+                <tr class="font-bold">
+                    <td>Total </td><td class="px-4 text-right"> {{ $summary->sum() }} EUR </td>
+                </tr>
+        </table>
+    </div>
+
+    <flux:separator class="my-4" />
+
     <table class="w-full">
         <tr>
             <thead>
@@ -71,12 +87,12 @@
                 <td>
                     {{ \App\Services\AppStore\Helpers\AppStoreProductType::tryFrom($sale['Product Type Identifier'])?->description() ?? $sale['Product Type Identifier']}}
                 </td>
-                <td>{{ $sale['Units'] }}</td>
-                <td>
+                <td class="text-right">{{ $sale['Units'] }}</td>
+                <td class="text-right">
                     {{ $sale['Developer Proceeds'] }}
                     {{ $sale['Currency of Proceeds'] }}
                 </td>
-                <td>
+                <td class="text-right">
                     {{ $sale['Customer Price'] }}
                     {{ $sale['Customer Currency'] }}
                 </td>
@@ -85,13 +101,4 @@
         </tbody>
     </table>
 
-    <div class="mt-8">
-        <table>
-            @foreach($summary as $key => $value)
-                <tr>
-                    <td>{{ $key }} </td><td class="px-4"> {{ $value }} EUR </td>
-                </tr>
-            @endforeach
-        </table>
-    </div>
 </div>
