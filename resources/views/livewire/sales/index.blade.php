@@ -19,30 +19,109 @@
                 </div>
             </div>
 
-            <div class="flex items-end gap-1 overflow-x-auto py-2 h-36">
-                @foreach($dailyStacked as $day)
-                    @php
-                        $barHeight = $maxTotal > 0 ? max(2, intval(($day['total'] / $maxTotal) * 100)) : 2;
-                    @endphp
-                    <div class="flex h-full flex-col items-center justify-end min-w-4">
-                        <div class="group relative w-2 rounded-sm bg-neutral-200/50 dark:bg-neutral-700/50 flex flex-col justify-end" style="height: {{ $barHeight }}%" tabindex="0" aria-label="{{ $day['date'] }} • ${{ number_format($day['total'], 2) }}" title="{{ $day['date'] }} • ${{ number_format($day['total'], 2) }}">
-                            @php $runningTotal = max(1, $day['total']); @endphp
-                            @foreach($day['segments'] as $segIdx => $seg)
-                                @php
-                                    $segHeight = $runningTotal > 0 ? intval(($seg['value'] / $runningTotal) * 100) : 0;
-                                @endphp
-                                <div class="{{ $palette[$segIdx % count($palette)] }} w-full" style="height: {{ $segHeight }}%">
-                                    <span class="sr-only">{{ $seg['app'] }}: {{ number_format($seg['value'], 2) }} €</span>
-                                </div>
-                            @endforeach
-                            <div class="pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded bg-neutral-900 px-1.5 py-0.5 text-[10px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus:opacity-100">
-                                {{ $day['date'] }} • {{ number_format($day['total'], 2) }} €
-                            </div>
-                        </div>
-                        <span class="mt-1 text-[10px] text-neutral-500">{{ \Illuminate\Support\Carbon::parse($day['date'])->format('m/d') }}</span>
-                    </div>
-                @endforeach
+            <div class="relative h-56 w-full" wire:ignore>
+                <canvas id="dailySalesChart" class="!h-full !w-full"></canvas>
             </div>
+
+            @php
+                // Prepare labels and datasets for Chart.js without altering the component
+                $labels = collect($dailyStacked)->pluck('date')->map(fn($d) => \Illuminate\Support\Carbon::parse($d)->format('m/d'))->values();
+                $datasets = collect($topApps)->values()->map(function ($app, $idx) use ($dailyStacked) {
+                    $data = collect($dailyStacked)->map(function ($day) use ($app) {
+                        $seg = collect($day['segments'])->firstWhere('app', $app);
+                        return $seg['value'] ?? 0;
+                    })->values();
+                    return [
+                        'label' => $app,
+                        'data' => $data,
+                        'backgroundColor' => $idx,
+                    ];
+                })->values();
+            @endphp
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7"></script>
+            <script>
+                // Blade-provided data for the current render
+                const __dailySalesLabels = @json($labels);
+                const __dailySalesDatasetsRaw = @json($datasets);
+
+                // Tailwind-ish palette approximations to match legend
+                const __dailySalesPalette = [
+                    'rgb(59 130 246)',   // blue-500
+                    'rgb(16 185 129)',   // emerald-500
+                    'rgb(245 158 11)',   // amber-500
+                    'rgb(217 70 239)',   // fuchsia-500
+                    'rgb(6 182 212)',    // cyan-500
+                    'rgb(244 63 94)',    // rose-500
+                ];
+
+                // Expose an idempotent initializer so Livewire navigations can call it
+                window.initDailySalesChart = function(labels = __dailySalesLabels, rawDatasets = __dailySalesDatasetsRaw) {
+                    const canvas = document.getElementById('dailySalesChart');
+                    if (!canvas || !window.Chart) { return; }
+
+                    // Destroy any existing instance
+                    if (window.__dailySalesChart) {
+                        try { window.__dailySalesChart.destroy(); } catch (e) {}
+                        window.__dailySalesChart = null;
+                    }
+
+                    const datasets = rawDatasets.map(d => ({
+                        label: d.label,
+                        data: d.data,
+                        backgroundColor: __dailySalesPalette[d.backgroundColor % __dailySalesPalette.length],
+                        borderWidth: 0,
+                        barPercentage: 0.9,
+                        categoryPercentage: 0.8,
+                        borderSkipped: false,
+                    }));
+
+                    const chart = new Chart(canvas, {
+                        type: 'bar',
+                        data: { labels, datasets },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: { mode: 'index', intersect: false },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: (context) => {
+                                            const v = context.raw ?? 0;
+                                            return `${context.dataset.label}: ${Number(v).toFixed(2)} €`;
+                                        },
+                                        footer: (items) => {
+                                            const sum = items.reduce((a, i) => a + (i.raw ?? 0), 0);
+                                            return `Total: ${sum.toFixed(2)} €`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: { stacked: true, grid: { display: false } },
+                                y: {
+                                    stacked: true,
+                                    ticks: {
+                                        callback: (v) => `${Number(v).toLocaleString()} €`
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    window.__dailySalesChart = chart;
+                }
+
+                // Initialize now (first load) and after Livewire navigations
+                document.addEventListener('DOMContentLoaded', () => {
+                    window.initDailySalesChart();
+                });
+
+                document.addEventListener('livewire:navigated', () => {
+                    window.initDailySalesChart();
+                });
+            </script>
         </div>
     @endisset
 
