@@ -45,7 +45,7 @@ return [
 
     'fixer' => [
         'key' => env('FIXER_API_KEY'),
-        'base_url' => env('FIXER_BASE_URL', 'https://api.apilayer.com/fixer'),
+        'base_url' => env('FIXER_BASE_URL', 'https://data.fixer.io/api'),
         // Note: Free plans may use EUR as base. We'll compute cross rates accordingly.
     ],
 

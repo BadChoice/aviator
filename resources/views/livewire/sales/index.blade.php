@@ -32,11 +32,11 @@
                                     $segHeight = $runningTotal > 0 ? intval(($seg['value'] / $runningTotal) * 100) : 0;
                                 @endphp
                                 <div class="{{ $palette[$segIdx % count($palette)] }} w-full" style="height: {{ $segHeight }}%">
-                                    <span class="sr-only">{{ $seg['app'] }}: ${{ number_format($seg['value'], 2) }}</span>
+                                    <span class="sr-only">{{ $seg['app'] }}: {{ number_format($seg['value'], 2) }} €</span>
                                 </div>
                             @endforeach
                             <div class="pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded bg-neutral-900 px-1.5 py-0.5 text-[10px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus:opacity-100">
-                                {{ $day['date'] }} • ${{ number_format($day['total'], 2) }}
+                                {{ $day['date'] }} • {{ number_format($day['total'], 2) }} €
                             </div>
                         </div>
                         <span class="mt-1 text-[10px] text-neutral-500">{{ \Illuminate\Support\Carbon::parse($day['date'])->format('m/d') }}</span>
@@ -89,7 +89,7 @@
         <table>
             @foreach($summary as $key => $value)
                 <tr>
-                    <td>{{ $key }} </td><td class="px-4"> {{ $value }} USD </td>
+                    <td>{{ $key }} </td><td class="px-4"> {{ $value }} EUR </td>
                 </tr>
             @endforeach
         </table>

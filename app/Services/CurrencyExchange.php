@@ -8,47 +8,40 @@ use Illuminate\Support\Facades\Http;
 
 class CurrencyExchange
 {
-    public function __construct(public ?string $apiKey = null, public ?string $baseUrl = null) {}
+    public function __construct(public ?string $apiKey = null, public ?string $baseUrl = null) {
+        $this->apiKey = $apiKey ?? config('services.fixer.key');
+        $this->baseUrl = $baseUrl ?? config('services.fixer.base_url');
+    }
 
     /**
      * Get the FX rate to convert from the given currency into USD for the given date.
      */
-    public function getRateToUsd(string $currency, CarbonInterface $date): float
+    public function getRateToEur(string $currency, CarbonInterface $date): float
     {
         $currency = strtoupper(trim($currency));
-        if ($currency === 'USD') {
+        if ($currency === 'EUR') {
             return 1.0;
         }
 
-        $cacheKey = "fx:rates:{$date->toDateString()}:{$currency}";
+        $cacheKey = "fx:rates:{$date->toDateString()}";
         $rates = Cache::remember($cacheKey, now()->addDay(), function () use ($date) {
             return $this->fetchRatesForDate($date);
         });
 
-        // Rates may be based on EUR on free plan; compute cross-rate to USD.
         if (! is_array($rates) || empty($rates)) {
             return 1.0; // Fallback neutral rate if unavailable
         }
 
-        $usd = (float) ($rates['USD'] ?? 0.0);
-        $src = (float) ($rates[$currency] ?? 0.0);
-
-        if ($usd <= 0.0 || $src <= 0.0) {
-            return 1.0;
-        }
-
-        // If rates are quoted as base EUR: 1 EUR = rate[currency]. Then 1 currency = 1/rate[currency] EUR.
-        // USD per currency = (USD per EUR) / (currency per EUR) = rates['USD'] / rates[currency]
-        return $usd / $src;
+        return (float) ($rates[$currency] ?? 1.0);
     }
 
     /**
      * Convert an amount in the given currency to USD using the given date's rate.
      */
-    public function convertToUsd(float $amount, string $currency, CarbonInterface $date): float
+    public function convertToEur(float $amount, string $currency, CarbonInterface $date): float
     {
-        $rate = $this->getRateToUsd($currency, $date);
-        return round($amount * $rate, 4);
+        $rate = $this->getRateToEur($currency, $date);
+        return round($amount / $rate, 4);
     }
 
     /**
@@ -59,20 +52,17 @@ class CurrencyExchange
      */
     protected function fetchRatesForDate(CarbonInterface $date): array
     {
-        $apiKey = $this->apiKey ?? (string) config('services.fixer.key');
-        $baseUrl = rtrim($this->baseUrl ?? (string) config('services.fixer.base_url'), '/');
 
-        if ($apiKey === '') {
+        if ($this->apiKey === '') {
             return [];
         }
 
-        $endpoint = $baseUrl.'/'.($date->isToday() ? 'latest' : $date->toDateString());
+        $endpoint = $this->baseUrl.'/'.($date->isToday() ? 'latest' : $date->toDateString());
+        https://data.fixer.io/api/latest?access_key=2bbd8854c22a8a95b03cfc44f7fa9001&base=EUR
 
-        $response = Http::withHeaders([
-            'apikey' => $apiKey,
-        ])->retry(2, 250)->get($endpoint, [
-            // We request both USD and a wildcard; Fixer requires specifying symbols on free tier; however,
-            // if not supported, omit symbols to get full map.
+        $response = Http::retry(2, 250)->get($endpoint, [
+            'access_key' => $this->apiKey,
+            'base' => 'EUR',
         ]);
 
         if (! $response->successful()) {

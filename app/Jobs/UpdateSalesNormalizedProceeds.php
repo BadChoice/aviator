@@ -35,21 +35,20 @@ class UpdateSalesNormalizedProceeds implements ShouldQueue
 
             $fx = new CurrencyExchange();
 
-            $query->orderBy('id')->chunkById(500, function ($chunk) use ($fx) {
-                /** @var Sale $sale */
+            $query->chunkById(500, function ($chunk) use ($fx) {
                 foreach ($chunk as $sale) {
                     try {
                         $currency = (string) ($sale->currency_of_proceeds ?? 'USD');
                         $date = $sale->begin_date ?? now();
 
                         $amount = (float) $sale->developer_proceeds;
-                        if ($currency !== 'USD') {
-                            $usd = $fx->convertToUsd($amount, $currency, $date);
+                        if ($currency !== 'EUR') {
+                            $eur = $fx->convertToEur($amount, $currency, $date);
                         } else {
-                            $usd = $amount;
+                            $eur = $amount;
                         }
 
-                        $sale->normalized_proceeds = round($usd, 2);
+                        $sale->normalized_proceeds = round($eur, 2);
                         $sale->save();
                     } catch (\Throwable $e) {
                         Log::warning('Failed to normalize proceeds for sale', [
