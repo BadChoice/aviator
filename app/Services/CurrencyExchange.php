@@ -20,7 +20,7 @@ class CurrencyExchange
             return 1.0;
         }
 
-        $cacheKey = "fx:rates:{$date->toDateString()}";
+        $cacheKey = "fx:rates:{$date->toDateString()}:{$currency}";
         $rates = Cache::remember($cacheKey, now()->addDay(), function () use ($date) {
             return $this->fetchRatesForDate($date);
         });
