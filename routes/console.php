@@ -8,5 +8,5 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('rankings:track-daily')->dailyAt('02:15');
-Schedule::command('sales:sync')->dailyAt('02:25');
+Schedule::command('sales:sync')->dailyAt('08:15')->timezone('America/Los_Angeles');
+Schedule::command('rankings:track-daily')->dailyAt('08:25')->timezone('America/Los_Angeles');
