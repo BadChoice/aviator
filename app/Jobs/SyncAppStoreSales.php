@@ -28,11 +28,7 @@ class SyncAppStoreSales implements ShouldQueue
         if (is_array($this->presetRows)) {
             $rows = $this->presetRows;
         } else {
-            $connect = new AppStoreConnect(
-                issuerId: config('services.app_store_connect.issuer_id'),
-                keyId: config('services.app_store_connect.key_id'),
-                privateKey: file_get_contents(config('services.app_store_connect.private_key')),
-            );
+            $connect = AppStoreConnect::make();
 
             $vendorId = (string) config('services.app_store_connect.vendor_id');
             $date = $this->date ? CarbonImmutable::parse($this->date) : now()->subDay(2)->startOfDay();

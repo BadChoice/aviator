@@ -13,6 +13,14 @@ class AppStoreConnect
 {
     private string $baseUrl;
 
+    public static function make() : AppStoreConnect {
+        return new AppStoreConnect(
+            issuerId: config('services.app_store_connect.issuer_id'),
+            keyId: config('services.app_store_connect.key_id'),
+            privateKey: file_get_contents(config('services.app_store_connect.private_key')),
+        );
+    }
+
     public function __construct(
         public string $issuerId,
         public string $keyId,
@@ -22,7 +30,7 @@ class AppStoreConnect
     }
 
 
-    public function call(string $url, ?array $params = null){
+    public function call(string $url, ?array $params = null, $gziped = false){
         $response = Http::withToken($this->generateJWT())->withHeaders([
             'Accept' => 'application/a-gzip, application/json',
             'Accept-Encoding' => 'gzip, deflate, br',
@@ -30,14 +38,24 @@ class AppStoreConnect
                 'decode_content' => false]
         )->get($url, $params);
         if ($response->successful()) {
-            return gzdecode($response->body());
+            return $gziped ? gzdecode($response->body()) : $response->json();
         } else {
             return $response->body();
         }
     }
+
     public function getAppInfo($appId)
     {
         return $this->call("{$this->baseUrl}/apps/{$appId}");
+    }
+
+    public function reviews(string $appId, ?string $locale = null)
+    {
+        return $this->call("{$this->baseUrl}/v1/apps/{$appId}/customerReviews", [
+            'filter[territory]' => $locale, // optional, e.g. 'ES', 'US'
+            'sort' => '-createdDate',
+            'limit' => 50,
+        ]);
     }
 
     public function salesReports(string $vendorId, ?CarbonInterface $date = null){
@@ -48,7 +66,7 @@ class AppStoreConnect
             'filter[reportType]' => 'SALES',
             'filter[reportSubType]' => 'SUMMARY',
             'filter[vendorNumber]' => $vendorId,
-        ]);
+        ], gziped:true);
 
         return SalesResponse::tsvToArray($tsv);
     }

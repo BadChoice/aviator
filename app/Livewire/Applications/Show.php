@@ -5,6 +5,7 @@ namespace App\Livewire\Applications;
 use App\Models\Application;
 use App\Models\Keyword;
 use App\Repositories\RankingRepository;
+use App\Services\AppStore\AppStoreConnect;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -34,6 +35,9 @@ class Show extends Component
 
     public function render(): \Illuminate\View\View
     {
+
+        $reviews = AppStoreConnect::make()->reviews($this->application->appstore_id)['data'];
+
         /** @var Collection<int, array{key:string, keyword_id:int, country:string, keyword_name:string, used:mixed, labels:array<int,string>, data:array<int,?int>, latest_position:?int}> $groups */
         $groups = app(RankingRepository::class)
             ->groupedSeriesForApplication($this->application);
@@ -41,6 +45,7 @@ class Show extends Component
         return view('livewire.applications.show', [
             'application' => $this->application,
             'groups' => $groups,
+            'reviews' => $reviews
         ]);
     }
 }
