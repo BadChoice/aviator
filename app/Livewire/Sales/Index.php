@@ -12,6 +12,13 @@ class Index extends Component
      */
     public int $days = 30;
 
+    public bool $showAll = false;
+
+
+    public function toggleAll(){
+        $this->showAll = !$this->showAll;
+    }
+
     public function render()
     {
         $salesModels = Sale::query()->latest('begin_date')->limit(500)->get();
@@ -41,6 +48,12 @@ class Index extends Component
             ->map(fn ($rows) => collect($rows)->sum(function ($sale) {
                 return (float) $sale['Units'] * (float) $sale['Developer Proceeds'];
             }));
+
+        $sales = collect($sales)->sortBy('Begin Date', 1);
+        if (!$this->showAll){
+            $sales = $sales->filter(fn($sale) => $sale['Developer Proceeds'] != 0);
+        }
+
 
         // Build daily stacked data per app (by Title) for the last N days
         $startDate = now()->subDays($this->days - 1)->startOfDay();

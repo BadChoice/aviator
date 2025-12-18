@@ -140,40 +140,36 @@
 
     <flux:separator class="my-4" />
 
-    <table class="w-full">
+    <flux:button wire:click="toggleAll">{{ $this->showAll ? "Show less" : "Show more" }}</flux:button>
+
+    <table class="w-full mt-4 text-sm">
         <tr>
             <thead>
-                <th>Date</th>
-                <th>Title</th>
-                <th>Sku</th>
-                <th>Version</th>
-                <th>Device</th>
-                <th>Product type identifier</th>
-                <th>Units</th>
-                <th>Proceeds</th>
-                <th>Customer Price</th>
+                <th class="px-2 py-1 bg-neutral-100 dark:bg-neutral-700 text-left">Date</th>
+                <th class="px-2 py-1 bg-neutral-100 dark:bg-neutral-700 text-left">Title</th>
+                <th class="px-2 py-1 bg-neutral-100 dark:bg-neutral-700 text-left">Sku</th>
+                <th class="px-2 py-1 bg-neutral-100 dark:bg-neutral-700 text-left">Version</th>
+                <th class="px-2 py-1 bg-neutral-100 dark:bg-neutral-700 text-left">Device</th>
+                <th class="px-2 py-1 bg-neutral-100 dark:bg-neutral-700 text-left">Product type identifier</th>
+                <th class="px-2 py-1 bg-neutral-100 dark:bg-neutral-700 text-right">Units</th>
+                <th class="px-2 py-1 bg-neutral-100 dark:bg-neutral-700 text-right">Proceeds</th>
             </thead>
         </tr>
 
         <tbody>
-        @foreach(collect($sales)->sortBy('SKU') as $sale)
-            <tr>
-                <td>{{ $sale['Begin Date'] }}</td>
-                <td>{{ $sale['Title'] }}</td>
-                <td>{{ $sale['SKU'] }}</td>
-                <td>{{ $sale['Version'] }}</td>
-                <td>{{ $sale['Device'] }}</td>
+        @foreach(collect($sales) as $sale)
+            <tr class="text-sm border-b border-b-gray-50 dark:border-b-gray-800">
+                <td class="px-2 py-1">{{ $sale['Begin Date'] }}</td>
+                <td class="px-2 py-1">{{ $sale['Title'] }}</td>
+                <td class="px-2 py-1">{{ $sale['SKU'] }}</td>
+                <td class="px-2 py-1">{{ $sale['Version'] }}</td>
+                <td class="px-2 py-1">{{ $sale['Device'] }}</td>
                 <td>
                     {{ \App\Services\AppStore\Helpers\AppStoreProductType::tryFrom($sale['Product Type Identifier'])?->description() ?? $sale['Product Type Identifier']}}
                 </td>
-                <td class="text-right">{{ $sale['Units'] }}</td>
-                <td class="text-right">
-                    {{ $sale['Developer Proceeds'] }}
-                    {{ $sale['Currency of Proceeds'] }}
-                </td>
-                <td class="text-right">
-                    {{ $sale['Customer Price'] }}
-                    {{ $sale['Customer Currency'] }}
+                <td class="px-2 py-1 text-right">{{ $sale['Units'] }}</td>
+                <td class="px-2 py-1 text-right font-bold">
+                    {{ $sale['Developer Proceeds'] }} EUR
                 </td>
             </tr>
         @endforeach

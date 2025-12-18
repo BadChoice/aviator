@@ -48,7 +48,7 @@ class UpdateSalesNormalizedProceeds implements ShouldQueue
                             $eur = $amount;
                         }
 
-                        $sale->normalized_proceeds = round($eur, 2);
+                        $sale->normalized_proceeds = round($eur * $sale->units, 2);
                         $sale->save();
                     } catch (\Throwable $e) {
                         Log::warning('Failed to normalize proceeds for sale', [
