@@ -37,26 +37,27 @@ class UpdateSalesNormalizedProceeds implements ShouldQueue
 
             $query->chunkById(500, function ($chunk) use ($fx) {
                 foreach ($chunk as $sale) {
-                    try {
-                        $currency = (string) ($sale->currency_of_proceeds ?? 'USD');
-                        $date = $sale->begin_date ?? now();
-
-                        $amount = (float) $sale->developer_proceeds;
-                        if ($currency !== 'EUR') {
-                            $eur = $fx->convertToEur($amount, $currency, $date);
-                        } else {
-                            $eur = $amount;
-                        }
-
-                        $sale->normalized_proceeds = round($eur * $sale->units, 2);
-                        $sale->save();
-                    } catch (\Throwable $e) {
-                        Log::warning('Failed to normalize proceeds for sale', [
-                            'sale_id' => $sale->id,
-                            'error' => $e->getMessage(),
-                        ]);
-                    }
+                    $this->normalizeSale($sale, $fx);
                 }
             });
+    }
+
+    private function normalizeSale(Sale $sale, CurrencyExchange $fx): void {
+        try {
+
+            $currency = (string) ($sale->currency_of_proceeds ?? 'USD');
+            $amount = (float) $sale->developer_proceeds;
+            $eur = ($currency === 'EUR') ? $amount : $fx->convertToEur(amount:$amount, currency: $currency, date:$sale->begin_date ?? now());
+
+
+            $sale->update([
+                'normalized_proceeds' => round($eur * $sale->units, 2)
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('Failed to normalize proceeds for sale', [
+                'sale_id' => $sale->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }

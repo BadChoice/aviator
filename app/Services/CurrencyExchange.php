@@ -61,7 +61,7 @@ class CurrencyExchange
         }
 
         $endpoint = $this->baseUrl.'/'.($date->isToday() ? 'latest' : $date->toDateString());
-        https://data.fixer.io/api/latest?access_key=2bbd8854c22a8a95b03cfc44f7fa9001&base=EUR
+        //https://data.fixer.io/api/latest?access_key=2bbd8854c22a8a95b03cfc44f7fa9001&base=EUR
 
         $response = Http::retry(2, 250)->get($endpoint, [
             'access_key' => $this->apiKey,
