@@ -46,7 +46,7 @@ class Index extends Component
         $summary = collect($sales)
             ->groupBy('SKU')
             ->map(fn ($rows) => collect($rows)->sum(function ($sale) {
-                return (float) $sale['Units'] * (float) $sale['Developer Proceeds'];
+                return (float) $sale['Developer Proceeds'];
             }));
 
         $sales = collect($sales)->sortBy('Begin Date', 1);
@@ -62,7 +62,7 @@ class Index extends Component
         $raw = Sale::query()
             ->whereNotNull('begin_date')
             ->whereBetween('begin_date', [$startDate, $endDate])
-            ->selectRaw('DATE(begin_date) as day, title, SUM(units * COALESCE(normalized_proceeds, developer_proceeds)) as revenue')
+            ->selectRaw('DATE(begin_date) as day, title, SUM(COALESCE(normalized_proceeds, 0)) as revenue')
             ->groupBy('day', 'title')
             ->get();
 

@@ -5,11 +5,23 @@ namespace App\Repositories;
 use App\Models\Application;
 use App\Models\Sale;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class SalesRepository
 {
+
+    public function dailySummary(CarbonInterface $from) : \Illuminate\Database\Eloquent\Collection{
+        return Sale::where('begin_date', '>', $from)
+            ->groupBy('sku')
+            ->groupBy('begin_date')
+            ->where('normalized_proceeds', '<>', 0)
+            ->select('sku', 'begin_date', DB::raw('sum(normalized_proceeds) as normalized_proceeds'))
+            ->get();
+    }
+
     /**
      * Build a day-by-day revenue series for an application for the last N days.
      *

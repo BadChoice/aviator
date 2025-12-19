@@ -15,7 +15,8 @@
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                     <flux:navlist.item icon="squares-2x2" :href="route('applications.index')" :current="request()->routeIs('applications.index')" wire:navigate>{{ __('Applications') }}</flux:navlist.item>
-                    <flux:navlist.item icon="currency-dollar" :href="route('sales.index')" :current="request()->routeIs('sales.index')" wire:navigate>{{ __('Sales') }}</flux:navlist.item>
+                    <flux:navlist.item icon="chart-bar" :href="route('sales.index')" :current="request()->routeIs('sales.index')" wire:navigate>{{ __('Sales') }}</flux:navlist.item>
+                    <flux:navlist.item icon="currency-dollar" :href="route('sales.daily')" :current="request()->routeIs('sales.daily')" wire:navigate>{{ __('Daily summary') }}</flux:navlist.item>
                     <flux:navlist.item icon="magnifying-glass" :href="route('appstore.search')" :current="request()->routeIs('appstore.search')" wire:navigate>{{ __('Search') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
