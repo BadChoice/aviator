@@ -60,14 +60,14 @@
                                 class="group relative w-1.5 rounded-sm bg-blue-500/70 outline-none dark:bg-blue-400/80"
                                 style="height: {{ $height }}%"
                                 tabindex="0"
-                                aria-label="{{ $point['date'] }} • ${{ number_format($point['value'], 2) }}"
-                                title="{{ $point['date'] }} • ${{ number_format($point['value'], 2) }}"
+                                aria-label="{{ $point['date'] }} • {{ number_format($point['value'], 2) }}" €
+                                title="{{ $point['date'] }} • {{ number_format($point['value'], 2) }}" €
                             >
                                 <div class="pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded bg-neutral-900 px-1.5 py-0.5 text-[10px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus:opacity-100">
-                                    {{ $point['date'] }} • ${{ number_format($point['value'], 2) }}
+                                    {{ $point['date'] }} • {{ number_format($point['value'], 2) }} €
                                 </div>
                             </div>
-                            <span class="mt-1 text-[10px] text-neutral-500 md:hidden">${{ number_format($point['value'], 2) }}</span>
+                            <span class="mt-1 text-[10px] text-neutral-500 md:hidden">{{ number_format($point['value'], 2) }} €</span>
                         </div>
                     @endforeach
                 </div>

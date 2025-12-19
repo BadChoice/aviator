@@ -40,7 +40,7 @@ class SalesRepository
             ->whereBetween('begin_date', [$start, $end])
             ->get()
             ->groupBy(fn (Sale $s) => Carbon::parse($s->begin_date)->toDateString())
-            ->map(fn (Collection $rows) => (float) $rows->sum('developer_proceeds'));
+            ->map(fn (Collection $rows) => (float) $rows->sum('normalized_proceeds'));
 
         $period = CarbonPeriod::create($start, $end);
 
