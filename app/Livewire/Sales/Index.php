@@ -49,7 +49,7 @@ class Index extends Component
                 return (float) $sale['Developer Proceeds'];
             }));
 
-        $sales = collect($sales)->sortBy('Begin Date', 1);
+        $sales = collect($sales);
         if (!$this->showAll){
             $sales = $sales->filter(fn($sale) => $sale['Developer Proceeds'] != 0);
         }
