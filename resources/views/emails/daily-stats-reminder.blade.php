@@ -21,6 +21,12 @@
             No t'oblidis de comprovar les vendes, classificacions i altres mètriques actualitzades.
         </p>
         
+        <p style="text-align: center; margin: 30px 0;">
+            <a href="{{ url(route('dashboard')) }}" style="display: inline-block; background-color: #007bff; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: 500; font-size: 16px;">
+                Veure estadístiques
+            </a>
+        </p>
+        
         <p style="font-size: 14px; color: #666; margin-top: 30px; margin-bottom: 0;">
             Salutacions,<br>
             Aviator
