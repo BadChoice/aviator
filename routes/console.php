@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('sales:sync')->dailyAt('08:15')->timezone('America/Los_Angeles');
 Schedule::command('rankings:track-daily')->dailyAt('08:25')->timezone('America/Los_Angeles');
+Schedule::command('stats:remind')->dailyAt('08:30')->timezone('America/Los_Angeles');
