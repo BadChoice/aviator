@@ -25,10 +25,24 @@ class CurrencyExchange
 
         $cacheKey = "fx:rates:{$date->toDateString()}";
         $rates = Cache::remember($cacheKey, now()->addDay(), function () use ($date) {
-            return $this->fetchRatesForDate($date);
+            $fetchedRates = $this->fetchRatesForDate($date);
+            
+            // Si l'API ha funcionat correctament, guardem les taxes com a backup
+            if (is_array($fetchedRates) && !empty($fetchedRates)) {
+                Cache::put('fx:rates:last_valid', $fetchedRates, now()->addDays(30));
+            }
+            
+            return $fetchedRates;
         });
 
+        // Si no hem pogut obtenir les taxes per a aquesta data, intentem utilitzar l'últim valor vàlid
         if (! is_array($rates) || empty($rates)) {
+            $lastValidRates = Cache::get('fx:rates:last_valid');
+            
+            if (is_array($lastValidRates) && !empty($lastValidRates) && isset($lastValidRates[$currency])) {
+                return (float) $lastValidRates[$currency];
+            }
+            
             return 1.0; // Fallback neutral rate if unavailable
         }
 
