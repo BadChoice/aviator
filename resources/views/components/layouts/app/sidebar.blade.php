@@ -80,6 +80,12 @@
             </flux:dropdown>
         </flux:sidebar>
 
+        <!-- Desktop Top Bar -->
+        <flux:header class="hidden lg:flex border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+            <flux:spacer />
+            <livewire:dashboard.topbar-actions />
+        </flux:header>
+
         <!-- Mobile User Menu -->
         <flux:header class="lg:hidden">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
