@@ -19,3 +19,9 @@ test('can get ranking position for a term', function (){
     $ranking = (new \App\Services\AppStore\AppStoreSearch)->rankingPositionFor('1555737702', keyword:"lucasarts");
     dd($ranking);
 });
+
+
+test('can get apple ads campaings', function() {
+    $campaings = \App\Services\AppleAds\AppleAds::make()->getCampaigns();
+    dd($campaings);
+});

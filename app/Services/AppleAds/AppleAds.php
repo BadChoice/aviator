@@ -35,7 +35,8 @@ class AppleAds
         $request = Http::withToken($this->generateJWT())
             ->withHeaders([
                 'Authorization' => 'Bearer ' . $this->generateJWT(),
-                'X-AP-Context' => 'orgId=' . $this->orgId,
+                //'X-AP-Context' => 'orgId=' . $this->orgId,
+                'Content-Type' => 'application/json',
             ]);
 
         $response = match (strtoupper($method)) {

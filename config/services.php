@@ -47,7 +47,7 @@ return [
         'client_id' => env('APPLE_ADS_CLIENT_ID'),
         'team_id' => env('APPLE_ADS_TEAM_ID'),
         'key_id' => env('APPLE_ADS_KEY_ID'),
-        'private_key' => resource_path('appstore/' . env('APPLE_ADS_PRIVATE_KEY')),
+        'private_key' => resource_path('appleads/' . env('APPLE_ADS_PRIVATE_KEY')),
         'org_id' => env('APPLE_ADS_ORG_ID'),
         'base_url' => env('APPLE_ADS_BASE_URL', 'https://api.searchads.apple.com/api/v4'),
     ],
