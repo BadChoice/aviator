@@ -18,6 +18,7 @@
                     <flux:navlist.item icon="chart-bar" :href="route('sales.index')" :current="request()->routeIs('sales.index')" wire:navigate>{{ __('Sales') }}</flux:navlist.item>
                     <flux:navlist.item icon="currency-dollar" :href="route('sales.daily')" :current="request()->routeIs('sales.daily')" wire:navigate>{{ __('Daily summary') }}</flux:navlist.item>
                     <flux:navlist.item icon="magnifying-glass" :href="route('appstore.search')" :current="request()->routeIs('appstore.search')" wire:navigate>{{ __('Search') }}</flux:navlist.item>
+                    <flux:navlist.item icon="megaphone" :href="route('apple-ads.campaigns.index')" :current="request()->routeIs('apple-ads.campaigns.*')" wire:navigate>{{ __('Apple Ads') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 

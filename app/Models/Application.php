@@ -24,6 +24,11 @@ class Application extends Model
         return $this->hasMany(Keyword::class);
     }
 
+    public function appleAdsCampaigns(): HasMany
+    {
+        return $this->hasMany(AppleAdsCampaign::class);
+    }
+
     public function rankings(): MorphMany
     {
         return $this->morphMany(Ranking::class, 'subject');

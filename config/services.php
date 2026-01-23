@@ -43,6 +43,15 @@ return [
         'base_url' => env('ASC_BASE_URL', 'https://api.appstoreconnect.apple.com'),
     ],
 
+    'apple_ads' => [
+        'client_id' => env('APPLE_ADS_CLIENT_ID'),
+        'team_id' => env('APPLE_ADS_TEAM_ID'),
+        'key_id' => env('APPLE_ADS_KEY_ID'),
+        'private_key' => resource_path('appstore/' . env('APPLE_ADS_PRIVATE_KEY')),
+        'org_id' => env('APPLE_ADS_ORG_ID'),
+        'base_url' => env('APPLE_ADS_BASE_URL', 'https://api.searchads.apple.com/api/v4'),
+    ],
+
     'fixer' => [
         'key' => env('FIXER_API_KEY'),
         'base_url' => env('FIXER_BASE_URL', 'https://data.fixer.io/api'),

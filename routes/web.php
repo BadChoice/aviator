@@ -37,4 +37,9 @@ Route::middleware(['auth'])->group(function () {
             ),
         )
         ->name('two-factor.show');
+
+    Route::get('/apple-ads/campaigns', \App\Livewire\AppleAds\Campaigns\Index::class)
+        ->name('apple-ads.campaigns.index');
+    Route::get('/apple-ads/campaigns/{campaign}', \App\Livewire\AppleAds\Campaigns\Show::class)
+        ->name('apple-ads.campaigns.show');
 });

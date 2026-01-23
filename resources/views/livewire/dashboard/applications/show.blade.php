@@ -63,7 +63,7 @@
                                 aria-label="{{ $point['date'] }} • {{ number_format($point['value'], 2) }}" €
                                 title="{{ $point['date'] }} • {{ number_format($point['value'], 2) }}" €
                             >
-                                <div class="pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded bg-neutral-900 px-1.5 py-0.5 text-[10px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus:opacity-100">
+                                <div class  ="pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded bg-neutral-900 px-1.5 py-0.5 text-[10px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus:opacity-100">
                                     {{ $point['date'] }} • {{ number_format($point['value'], 2) }} €
                                 </div>
                             </div>
