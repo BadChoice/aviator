@@ -12,11 +12,11 @@ class AppleAds
     public static function make(): AppleAds
     {
         return new AppleAds(
-            clientId: config('services.apple_ads.client_id'),
-            teamId: config('services.apple_ads.team_id'),
-            keyId: config('services.apple_ads.key_id'),
+            clientId: trim(config('services.apple_ads.client_id')),
+            teamId: trim(config('services.apple_ads.team_id')),
+            keyId: trim(config('services.apple_ads.key_id')),
             privateKey: file_get_contents(config('services.apple_ads.private_key')),
-            orgId: config('services.apple_ads.org_id'),
+            orgId: trim(config('services.apple_ads.org_id')),
         );
     }
 
@@ -32,11 +32,13 @@ class AppleAds
 
     public function call(string $method, string $url, ?array $params = null, ?array $data = null)
     {
-        $request = Http::withToken($this->generateJWT())
-            ->withHeaders([
-                'Authorization' => 'Bearer ' . $this->generateJWT(),
-                //'X-AP-Context' => 'orgId=' . $this->orgId,
+        $jwt = $this->generateJWT();
+
+        $request = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $jwt,
+                'X-AP-Context' => 'orgId=' . $this->orgId,
                 'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
             ]);
 
         $response = match (strtoupper($method)) {
@@ -50,6 +52,16 @@ class AppleAds
         if ($response->successful()) {
             return $response->json();
         } else {
+            \Log::error('Apple Ads API Error', [
+                'url' => $url,
+                'method' => $method,
+                'status' => $response->status(),
+                'response' => $response->body(),
+                'headers' => [
+                    'X-AP-Context' => 'orgId=' . $this->orgId,
+                    'Authorization' => 'Bearer [REDACTED]',
+                ]
+            ]);
             throw new \Exception("Apple Ads API Error: " . $response->body());
         }
     }
@@ -97,14 +109,15 @@ class AppleAds
     private function generateJWT(): string
     {
         $now = time();
-        $exp = $now + 900; // Token valid for 15 minutes
+        $exp = $now + 180; // Token valid for 3 minutes
 
+        // Apple Search Ads API v5 JWT structure
         $payload = [
-            'sub' => $this->clientId,
-            'aud' => 'https://appleid.apple.com',
+            'iss' => $this->teamId,
             'iat' => $now,
             'exp' => $exp,
-            'iss' => $this->teamId,
+            'aud' => 'https://appleid.apple.com',
+            'sub' => $this->clientId,
         ];
 
         return JWT::encode($payload, $this->privateKey, 'ES256', $this->keyId);

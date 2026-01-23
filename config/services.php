@@ -49,7 +49,7 @@ return [
         'key_id' => env('APPLE_ADS_KEY_ID'),
         'private_key' => resource_path('appleads/' . env('APPLE_ADS_PRIVATE_KEY')),
         'org_id' => env('APPLE_ADS_ORG_ID'),
-        'base_url' => env('APPLE_ADS_BASE_URL', 'https://api.searchads.apple.com/api/v4'),
+        'base_url' => env('APPLE_ADS_BASE_URL', 'https://api.searchads.apple.com/api/v5'),
     ],
 
     'fixer' => [
