@@ -32,7 +32,7 @@
                                         <span class="text-neutral-500">—</span>
                                     @endif
                                 </td>
-                                <td class="px-3 py-2 text-neutral-500">{{ $row['date'] ?? '—' }}</td>
+                                <td class="px-3 py-2 text-neutral-500 dark:text-white">{{ $row['date'] ?? '—' }}</td>
                             </tr>
                         @empty
                             <tr>
