@@ -29,7 +29,7 @@
                                     @if($row['position'] !== null)
                                         <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-0.5 text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-900/20 dark:text-green-300">#{{ $row['position'] }}</span>
                                     @else
-                                        <span class="text-neutral-500">—</span>
+                                        <span class="text-neutral-500 dark:text-white">—</span>
                                     @endif
                                 </td>
                                 <td class="px-3 py-2 text-neutral-500 dark:text-white">{{ $row['date'] ?? '—' }}</td>
