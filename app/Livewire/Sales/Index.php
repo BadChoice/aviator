@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Sales;
 
-use App\Models\Sale;
+use App\Repositories\SalesRepository;
 use Livewire\Component;
 
 class Index extends Component
@@ -21,95 +21,44 @@ class Index extends Component
 
     public function render()
     {
-        $salesModels = Sale::query()->latest('begin_date')->limit(500)->get();
+        $repository = app(SalesRepository::class);
+        $salesModels = $repository->recentSales();
 
         // Map to the same array shape used in the Blade for minimal UI change
-        $sales = $salesModels->map(function (Sale $s) {
-            $usd = $s->normalized_proceeds ?? $s->developer_proceeds;
+        $sales = $salesModels->map(function ($sale) use ($repository) {
+            $proceeds = $repository->effectiveProceedsForSale($sale);
+
             return [
-                'Begin Date' => optional($s->begin_date)->format('m/d/Y'),
-                'End Date' => optional($s->end_date)->format('m/d/Y'),
-                'Title' => $s->title,
-                'SKU' => $s->sku,
-                'Version' => $s->version,
-                'Device' => $s->device,
-                'Product Type Identifier' => $s->product_type_identifier,
-                'Units' => $s->units,
-                // Show normalized USD proceeds on UI
-                'Developer Proceeds' => (string) $usd,
+                'Begin Date' => optional($sale->begin_date)->format('m/d/Y'),
+                'End Date' => optional($sale->end_date)->format('m/d/Y'),
+                'Title' => $sale->title,
+                'SKU' => $sale->sku,
+                'Version' => $sale->version,
+                'Device' => $sale->device,
+                'Product Type Identifier' => $sale->product_type_identifier,
+                'Units' => $sale->units,
+                'Developer Proceeds' => (string) $proceeds,
                 'Currency of Proceeds' => 'USD',
-                'Customer Price' => (string) $s->customer_price,
-                'Customer Currency' => $s->customer_currency,
+                'Customer Price' => (string) $sale->customer_price,
+                'Customer Currency' => $sale->customer_currency,
             ];
         })->all();
 
-        $summary = collect($sales)
-            ->groupBy('SKU')
-            ->map(fn ($rows) => collect($rows)->sum(function ($sale) {
-                return (float) $sale['Developer Proceeds'];
-            }));
+        $summary = $repository->summaryBySku($salesModels);
 
         $sales = collect($sales);
         if (!$this->showAll){
             $sales = $sales->filter(fn($sale) => $sale['Developer Proceeds'] != 0);
         }
 
-
-        // Build daily stacked data per app (by Title) for the last N days
-        $startDate = now()->subDays($this->days - 1)->startOfDay();
-        $endDate = now()->endOfDay();
-
-        $raw = Sale::query()
-            ->whereNotNull('begin_date')
-            ->whereBetween('begin_date', [$startDate, $endDate])
-            ->selectRaw('DATE(begin_date) as day, title, SUM(COALESCE(normalized_proceeds, 0)) as revenue')
-            ->groupBy('day', 'title')
-            ->get();
-
-        // Determine the top apps by total revenue in the period (limit to 6 for readability)
-        $topApps = $raw
-            ->groupBy('title')
-            ->map(fn ($rows) => $rows->sum('revenue'))
-            ->sortDesc()
-            ->take(6)
-            ->keys()
-            ->values();
-
-        // Build a continuous series of dates
-        $dates = collect();
-        for ($d = $startDate->copy(); $d->lte($endDate); $d->addDay()) {
-            $dates->push($d->toDateString());
-        }
-
-        // Map data per date with segments for each top app
-        $dailyStacked = $dates->map(function (string $date) use ($raw, $topApps) {
-            $segments = $topApps->map(function ($app) use ($raw, $date) {
-                $match = $raw->first(fn ($r) => $r->day === $date && $r->title === $app);
-                $value = (float) ($match->revenue ?? 0);
-
-                return [
-                    'app' => $app,
-                    'value' => round($value, 2),
-                ];
-            })->all();
-
-            $total = collect($segments)->sum('value');
-
-            return [
-                'date' => $date,
-                'segments' => $segments,
-                'total' => round($total, 2),
-            ];
-        });
-
-        $maxTotal = max(1, (int) ceil($dailyStacked->max('total') ?? 1));
+        $stackedRevenue = $repository->dailyStackedRevenueByTitle($this->days, 6);
 
         return view('livewire.sales.index', [
             'sales' => $sales,
             'summary' => $summary,
-            'dailyStacked' => $dailyStacked,
-            'maxTotal' => $maxTotal,
-            'topApps' => $topApps,
+            'dailyStacked' => $stackedRevenue['dailyStacked'],
+            'maxTotal' => $stackedRevenue['maxTotal'],
+            'topApps' => $stackedRevenue['topApps'],
             'daysWindow' => $this->days,
         ]);
     }
