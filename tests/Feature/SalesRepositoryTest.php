@@ -22,16 +22,19 @@ it('builds revenue series for last days for an application', function (): void {
         'apple_identifier' => '1111111111',
         'begin_date' => Carbon::today()->subDays(2),
         'developer_proceeds' => 5.00,
+        'normalized_proceeds' => 5.00,
     ]);
     Sale::factory()->create([
         'apple_identifier' => '1111111111',
         'begin_date' => Carbon::today()->subDay(),
         'developer_proceeds' => 12.30,
+        'normalized_proceeds' => 12.30,
     ]);
     Sale::factory()->create([
         'apple_identifier' => '1111111111',
         'begin_date' => Carbon::today(),
         'developer_proceeds' => 0.70,
+        'normalized_proceeds' => 0.70,
     ]);
 
     $repo = app(SalesRepository::class);
@@ -60,6 +63,7 @@ it('fills missing days with zero revenue', function (): void {
         'apple_identifier' => '2222222222',
         'begin_date' => Carbon::today()->subDay(),
         'developer_proceeds' => 9.99,
+        'normalized_proceeds' => 9.99,
     ]);
 
     $repo = app(SalesRepository::class);
@@ -73,7 +77,7 @@ it('fills missing days with zero revenue', function (): void {
     expect($map[Carbon::today()->toDateString()])->toBe(0.0);
 });
 
-it('falls back to developer proceeds multiplied by units when normalized proceeds are missing', function (): void {
+it('returns zero when normalized proceeds are missing', function (): void {
     $app = Application::query()->create([
         'name' => 'Fallback App',
         'icon' => null,
@@ -92,10 +96,10 @@ it('falls back to developer proceeds multiplied by units when normalized proceed
     $series = $repo->revenueSeriesForApplication($app, 1);
 
     expect($series)->toHaveCount(1);
-    expect($series->first()['value'])->toBe(7.5);
+    expect($series->first()['value'])->toBe(0.0);
 });
 
-it('builds daily stacked revenue with the same proceeds fallback rules', function (): void {
+it('builds daily stacked revenue using normalized proceeds only', function (): void {
     Sale::factory()->create([
         'title' => 'App One',
         'begin_date' => Carbon::today(),
@@ -118,6 +122,6 @@ it('builds daily stacked revenue with the same proceeds fallback rules', functio
     $todayRow = $data['dailyStacked']->firstWhere('date', $today);
 
     expect($todayRow)->not->toBeNull();
-    expect(collect($todayRow['segments'])->firstWhere('app', 'App One')['value'])->toBe(2.5);
+    expect(collect($todayRow['segments'])->firstWhere('app', 'App One')['value'])->toBe(0.0);
     expect(collect($todayRow['segments'])->firstWhere('app', 'App Two')['value'])->toBe(9.0);
 });

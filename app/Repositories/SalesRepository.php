@@ -15,7 +15,7 @@ class SalesRepository
 {
     private function proceedsSqlExpression(): string
     {
-        return 'COALESCE(normalized_proceeds, developer_proceeds * units)';
+        return 'COALESCE(normalized_proceeds, 0)';
     }
 
     public function effectiveProceedsForSale(Sale $sale): float
@@ -24,7 +24,7 @@ class SalesRepository
             return round((float) $sale->normalized_proceeds, 2);
         }
 
-        return round((float) $sale->developer_proceeds * (int) $sale->units, 2);
+        return 0.0;
     }
 
     public function recentSales(int $limit = 500): EloquentCollection
