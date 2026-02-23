@@ -7,6 +7,7 @@ use App\Services\CurrencyExchange;
 use Carbon\CarbonInterface;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class UpdateSalesNormalizedProceeds implements ShouldQueue
@@ -21,7 +22,7 @@ class UpdateSalesNormalizedProceeds implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(CurrencyExchange $fx): void
     {
             $query = Sale::query();
 
@@ -32,8 +33,6 @@ class UpdateSalesNormalizedProceeds implements ShouldQueue
             if ($this->onlyMissing) {
                 $query->whereNull('normalized_proceeds');
             }
-
-            $fx = new CurrencyExchange();
 
             $query->chunkById(500, function ($chunk) use ($fx) {
                 foreach ($chunk as $sale) {
@@ -46,7 +45,8 @@ class UpdateSalesNormalizedProceeds implements ShouldQueue
         try {
             $currency = (string) ($sale->currency_of_proceeds ?? 'USD');
             $amount = (float) $sale->developer_proceeds;
-            $eur = ($currency === 'EUR') ? $amount : $fx->convertToEur(amount:$amount, currency: $currency, date:$sale->begin_date ?? now());
+            $date = $sale->begin_date ?? Carbon::now();
+            $eur = ($currency === 'EUR') ? $amount : $fx->convertToEurUsingMonthlyRate(amount: $amount, currency: $currency, date: $date);
 
             $sale->update([
                 'normalized_proceeds' => round($eur * $sale->units, 2)

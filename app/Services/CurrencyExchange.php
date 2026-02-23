@@ -8,13 +8,16 @@ use Illuminate\Support\Facades\Http;
 
 class CurrencyExchange
 {
+    /** @var array<string,float> */
+    private array $monthlyRateCache = [];
+
     public function __construct(public ?string $apiKey = null, public ?string $baseUrl = null) {
         $this->apiKey = $apiKey ?? config('services.fixer.key');
         $this->baseUrl = $baseUrl ?? config('services.fixer.base_url');
     }
 
     /**
-     * Get the FX rate to convert from the given currency into USD for the given date.
+     * Get the FX rate to convert from the given currency into EUR for the given date.
      */
     public function getRateToEur(string $currency, CarbonInterface $date): float
     {
@@ -50,7 +53,28 @@ class CurrencyExchange
     }
 
     /**
-     * Convert an amount in the given currency to USD using the given date's rate.
+     * Get the FX rate to convert from the given currency into EUR for the month of the given date.
+     * The same month always reuses the month-start rate.
+     */
+    public function getRateToEurForMonth(string $currency, CarbonInterface $date): float
+    {
+        $currency = strtoupper(trim($currency));
+        if ($currency === 'EUR') {
+            return 1.0;
+        }
+
+        $monthStart = $date->copy()->startOfMonth();
+        $monthKey = sprintf('%s:%s', $currency, $monthStart->format('Y-m'));
+
+        if (array_key_exists($monthKey, $this->monthlyRateCache)) {
+            return $this->monthlyRateCache[$monthKey];
+        }
+
+        return $this->monthlyRateCache[$monthKey] = $this->getRateToEur($currency, $monthStart);
+    }
+
+    /**
+     * Convert an amount in the given currency to EUR using the given date's rate.
      */
     public function convertToEur(float $amount, string $currency, CarbonInterface $date): float
     {
@@ -58,6 +82,21 @@ class CurrencyExchange
             return 0;
         }
         $rate = $this->getRateToEur($currency, $date);
+        return round($amount / $rate, 4);
+    }
+
+    /**
+     * Convert an amount in the given currency to EUR using a monthly fixed rate.
+     * The month-start date is used as the anchor for the entire month.
+     */
+    public function convertToEurUsingMonthlyRate(float $amount, string $currency, CarbonInterface $date): float
+    {
+        if ($amount == 0) {
+            return 0;
+        }
+
+        $rate = $this->getRateToEurForMonth($currency, $date);
+
         return round($amount / $rate, 4);
     }
 
