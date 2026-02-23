@@ -45,6 +45,9 @@ class Index extends Component
         })->all();
 
         $summary = $repository->summaryBySku($salesModels);
+        $standardProceedsTotal = round($salesModels->sum(function ($sale) {
+            return (float) $sale->developer_proceeds * (int) $sale->units;
+        }), 2);
 
         $sales = collect($sales);
         if (!$this->showAll){
@@ -60,6 +63,7 @@ class Index extends Component
             'maxTotal' => $stackedRevenue['maxTotal'],
             'topApps' => $stackedRevenue['topApps'],
             'daysWindow' => $this->days,
+            'standardProceedsTotal' => $standardProceedsTotal,
         ]);
     }
 }

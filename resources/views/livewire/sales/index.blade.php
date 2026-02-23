@@ -173,6 +173,12 @@
                 </td>
             </tr>
         @endforeach
+        @if($this->showAll)
+            <tr class="text-sm font-semibold border-t border-t-gray-200 dark:border-t-gray-700">
+                <td class="px-2 py-2" colspan="7">Standard Proceeds Total</td>
+                <td class="px-2 py-2 text-right">{{ number_format($standardProceedsTotal, 2) }} EUR</td>
+            </tr>
+        @endif
         </tbody>
     </table>
 
