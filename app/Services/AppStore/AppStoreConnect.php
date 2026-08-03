@@ -38,7 +38,13 @@ class AppStoreConnect
                 'decode_content' => false]
         )->get($url, $params);
         if ($response->successful()) {
-            return $gziped ? gzdecode($response->body()) : $response->json();
+            $body = $response->body();
+
+            if ($response->header('Content-Encoding') === 'gzip') {
+                $body = gzdecode($body);
+            }
+
+            return $gziped ? $body : json_decode($body, true, flags: JSON_THROW_ON_ERROR);
         } else {
             return $response->body();
         }
